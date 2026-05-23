@@ -7,6 +7,20 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- ===== 启动屏 ===== -->
+    <div id="splash-screen">
+        <div class="splash-bg"></div>
+        <div class="splash-overlay"></div>
+        <canvas id="splash-canvas"></canvas>
+        <div class="splash-content">
+            <h1 class="splash-title" id="splash-title">THRESHOLD OVERRUN</h1>
+            <p class="splash-sub">阈值超限</p>
+            <p class="splash-hint">— 点击任意位置进入 —</p>
+        </div>
+    </div>
+
+    <!-- ===== 主内容 ===== -->
+    <div id="main-content">
     <div class="scanlines"></div>
     <div class="vignette"></div>
     <div class="noise"></div>
@@ -27,6 +41,7 @@
                 <a href="#technology" class="nav-link">科技概念</a>
                 <a href="#ecology" class="nav-link">自然生态</a>
                 <a href="#characters" class="nav-link">人物档案</a>
+                <a href="#forum" class="nav-link">论坛</a>
             </nav>
             <div class="header-meta">
                 <span class="status-indicator"></span>
@@ -56,6 +71,7 @@
                     <li><a href="#char-akio">入江阳生</a></li>
                     <li><a href="#char-kiryuu">百十四桐生</a></li>
                     <li><a href="#char-list">立原泷</a></li>
+                    <li style="margin-top:12px; padding-top:8px; border-top:1px solid var(--border-color);"><a href="#forum">◉ 论坛</a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
@@ -560,6 +576,38 @@
                     </div>
                 </div>
             </section>
+
+            <!-- ===== 论坛 ===== -->
+            <section id="forum" class="forum-section">
+                <h2 class="forum-main-title">
+                    <span class="section-icon">◆</span>
+                    论坛
+                </h2>
+
+                <!-- 设置用户 ID -->
+                <div class="forum-user-setup">
+                    <label class="forum-label" for="forum-user-id">你的 ID</label>
+                    <input type="text" id="forum-user-id" class="forum-input" placeholder="输入你的昵称…" maxlength="20">
+                </div>
+
+                <!-- 发布区域 -->
+                <div class="forum-post-box">
+                    <textarea id="forum-text" class="forum-textarea" placeholder="说点什么…" rows="3" maxlength="2000"></textarea>
+                    <div class="forum-actions">
+                        <label class="forum-img-btn" title="上传图片">
+                            <input type="file" id="forum-img-input" accept="image/*" hidden>
+                            <span>📷 图片</span>
+                        </label>
+                        <div class="forum-preview" id="forum-preview"></div>
+                        <button id="forum-submit" class="forum-submit-btn">发布</button>
+                    </div>
+                </div>
+
+                <!-- 评论区 -->
+                <div class="forum-comments" id="forum-comments">
+                    <p class="forum-empty">暂无评论，来说点什么吧。</p>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -573,6 +621,299 @@
         <a href="https://www.xiaohongshu.com/user/profile/60fa5cc1000000000100a6cc" class="threat-high">小红书</a>
         <a href="https://space.bilibili.com/393590464?spm_id_from=333.788.0.0" class="threat-high">B站</a>
     </div>
+
+    </div><!-- /#main-content -->
+
+    <!-- 启动屏标题闪烁 → 渐隐进入 + 粒子跟随 -->
+    <script>
+    (function() {
+        const splash = document.getElementById('splash-screen');
+        const canvas = document.getElementById('splash-canvas');
+        const content = document.querySelector('.splash-content');
+        const mainContent = document.getElementById('main-content');
+        const ctx = canvas.getContext('2d');
+
+        let mouseX = -100, mouseY = -100;
+        let particles = [];
+        let animId = null;
+        let clicked = false;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        // 粒子类
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 0.8;
+                this.vy = (Math.random() - 0.5) * 0.8 - Math.random() * 1.2;
+                this.alpha = 0.6 + Math.random() * 0.4;
+                this.size = 1.5 + Math.random() * 3;
+                this.life = 0.8 + Math.random() * 1.2;
+                this.age = 0;
+                this.baseColor = Math.random() < 0.5 ? '200,220,255' : '180,200,240';
+            }
+            update(dt) {
+                this.age += dt;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.03; // 微重力上浮
+                this.alpha -= dt * (0.3 + Math.random() * 0.1);
+            }
+            draw(ctx) {
+                if (this.alpha <= 0) return;
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = `rgba(${this.baseColor},1)`;
+                ctx.shadowColor = 'rgba(180,210,255,0.7)';
+                ctx.shadowBlur = this.size * 3;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+            isDead() { return this.alpha <= 0; }
+        }
+
+        // 鼠标移动跟踪
+        splash.addEventListener('mousemove', (e) => {
+            if (clicked) return;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            // 在鼠标位置生成粒子
+            for (let i = 0; i < 2; i++) {
+                particles.push(new Particle(mouseX, mouseY));
+            }
+            // 限制总粒子数
+            if (particles.length > 80) {
+                particles.splice(0, particles.length - 80);
+            }
+        });
+
+        splash.addEventListener('mouseleave', () => {
+            mouseX = -100;
+            mouseY = -100;
+        });
+
+        function animate() {
+            if (clicked) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const dt = 0.016;
+
+            // 更新绘制粒子
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update(dt);
+                particles[i].draw(ctx);
+                if (particles[i].isDead()) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            animId = requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 点击逻辑
+        splash.addEventListener('click', function handler() {
+            splash.removeEventListener('click', handler);
+            clicked = true;
+            cancelAnimationFrame(animId);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 阶段1：标题闪烁 0.6s
+            content.classList.add('blink-out');
+
+            // 阶段2：闪烁结束后，整屏渐隐 + 显示主页
+            setTimeout(() => {
+                splash.classList.add('fade-out');
+                mainContent.classList.add('visible');
+
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                }, 650);
+            }, 600);
+        });
+    })();
+    </script>
+
+    <!-- 论坛评论系统 -->
+    <script>
+    (function() {
+        const STORAGE_KEY = 'forum_comments_threshold';
+        const USER_KEY = 'forum_user_id';
+
+        const userIdInput = document.getElementById('forum-user-id');
+        const textarea = document.getElementById('forum-text');
+        const imgInput = document.getElementById('forum-img-input');
+        const previewDiv = document.getElementById('forum-preview');
+        const submitBtn = document.getElementById('forum-submit');
+        const commentsDiv = document.getElementById('forum-comments');
+
+        let pendingImages = [];
+        let comments = [];
+
+        // 加载已保存的用户 ID
+        const savedId = localStorage.getItem(USER_KEY);
+        if (savedId) userIdInput.value = savedId;
+
+        // 加载评论
+        function loadComments() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                comments = raw ? JSON.parse(raw) : [];
+            } catch (e) {
+                comments = [];
+            }
+        }
+
+        function saveComments() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(comments));
+        }
+
+        // 格式化时间
+        function formatTime(ts) {
+            const d = new Date(ts);
+            return d.getFullYear() + '.' + 
+                String(d.getMonth() + 1).padStart(2, '0') + '.' +
+                String(d.getDate()).padStart(2, '0') + ' ' +
+                String(d.getHours()).padStart(2, '0') + ':' +
+                String(d.getMinutes()).padStart(2, '0');
+        }
+
+        // 图片转 base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // 渲染评论列表
+        function renderComments() {
+            if (comments.length === 0) {
+                commentsDiv.innerHTML = '<p class="forum-empty">暂无评论，来说点什么吧。</p>';
+                return;
+            }
+
+            const currentUserId = userIdInput.value.trim();
+            commentsDiv.innerHTML = comments.map((c, i) => `
+                <div class="forum-comment" data-index="${i}">
+                    <div class="forum-comment-header">
+                        <div class="forum-comment-avatar">${c.user.charAt(0)}</div>
+                        <span class="forum-comment-user">${escapeHtml(c.user)}</span>
+                        <span class="forum-comment-time">${formatTime(c.time)}</span>
+                    </div>
+                    ${c.text ? `<div class="forum-comment-body">${escapeHtml(c.text).replace(/\n/g, '<br>')}</div>` : ''}
+                    ${c.images && c.images.length ? `
+                        <div class="forum-comment-images">
+                            ${c.images.map((img, j) => `<img src="${img}" alt="图片${j+1}" onclick="showForumLightbox('${img}')">`).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="forum-comment-footer">
+                        <span>#${i + 1}</span>
+                        ${c.user === currentUserId ? `<button class="forum-comment-delete" onclick="deleteForumComment(${i})">删除</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // 选择图片
+        imgInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            for (const file of files) {
+                if (pendingImages.length >= 4) { alert('最多上传 4 张图片'); break; }
+                if (file.size > 5 * 1024 * 1024) { alert('单张图片不超过 5MB'); continue; }
+                const b64 = await fileToBase64(file);
+                pendingImages.push(b64);
+            }
+            imgInput.value = '';
+            renderPreview();
+        });
+
+        function renderPreview() {
+            previewDiv.innerHTML = pendingImages.map((img, i) => `
+                <div class="forum-preview-item">
+                    <img src="${img}" alt="预览${i+1}">
+                    <button class="forum-preview-remove" onclick="removePendingImage(${i})">&times;</button>
+                </div>
+            `).join('');
+        }
+
+        // 发布
+        submitBtn.addEventListener('click', () => {
+            const userId = userIdInput.value.trim();
+            const text = textarea.value.trim();
+
+            if (!userId) { alert('请先输入你的 ID'); userIdInput.focus(); return; }
+            if (!text && pendingImages.length === 0) { alert('请输入内容或上传图片'); return; }
+
+            localStorage.setItem(USER_KEY, userId);
+
+            comments.unshift({
+                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+                user: userId,
+                text: text,
+                images: [...pendingImages],
+                time: Date.now(),
+            });
+
+            saveComments();
+            textarea.value = '';
+            pendingImages = [];
+            previewDiv.innerHTML = '';
+            renderComments();
+        });
+
+        // Ctrl+Enter 快速发布
+        textarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                submitBtn.click();
+            }
+        });
+
+        // 全局函数
+        window.removePendingImage = function(i) {
+            pendingImages.splice(i, 1);
+            renderPreview();
+        };
+
+        window.deleteForumComment = function(i) {
+            if (confirm('确定要删除这条评论吗？')) {
+                comments.splice(i, 1);
+                saveComments();
+                renderComments();
+            }
+        };
+
+        window.showForumLightbox = function(src) {
+            const lb = document.createElement('div');
+            lb.className = 'forum-lightbox';
+            lb.innerHTML = `<img src="${src}" alt="查看图片">`;
+            lb.addEventListener('click', () => lb.remove());
+            document.body.appendChild(lb);
+        };
+
+        // 初始化
+        loadComments();
+        renderComments();
+    })();
+    </script>
 
     <script src="script.js"></script>
 </body>

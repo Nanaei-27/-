@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
 
 :root {
     --bg-primary: #0d0d0f;
@@ -20,6 +21,118 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+/* ===== 启动屏 ===== */
+#splash-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.splash-bg {
+    position: absolute;
+    inset: 0;
+    background: url('概念界面.png') center/cover no-repeat;
+    z-index: 0;
+}
+
+.splash-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(13,13,15,0.25) 0%, rgba(13,13,15,0.7) 100%);
+    z-index: 1;
+}
+
+#splash-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.splash-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    pointer-events: none;
+}
+
+.splash-title {
+    font-family: 'Orbitron', 'Share Tech Mono', sans-serif;
+    font-size: clamp(36px, 7vw, 80px);
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 12px;
+    text-shadow:
+        0 0 20px rgba(255, 255, 255, 0.6),
+        0 0 60px rgba(255, 255, 255, 0.3),
+        0 0 100px rgba(200, 200, 200, 0.2),
+        0 2px 4px rgba(0, 0, 0, 0.5);
+    line-height: 1.2;
+    transition: text-shadow 0.3s;
+    user-select: none;
+}
+
+.splash-sub {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(14px, 2vw, 20px);
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 6px;
+    margin-top: 12px;
+    user-select: none;
+}
+
+.splash-hint {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 4px;
+    margin-top: 48px;
+    animation: hintPulse 2s ease-in-out infinite;
+    user-select: none;
+}
+
+@keyframes hintPulse {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 0.7; }
+}
+
+/* 标题闪烁 */
+.splash-content.blink-out {
+    animation: titleBlink 0.6s ease-out forwards;
+}
+
+@keyframes titleBlink {
+    0%   { opacity: 1; }
+    8%   { opacity: 0; }
+    16%  { opacity: 1; }
+    28%  { opacity: 0.1; }
+    38%  { opacity: 1; }
+    50%  { opacity: 0; }
+    100% { opacity: 0; }
+}
+
+/* 整屏渐隐 */
+#splash-screen.fade-out {
+    opacity: 0;
+    transition: opacity 0.6s ease-out;
+    pointer-events: none;
+}
+
+/* 主内容初始隐藏 */
+#main-content {
+    opacity: 0;
+    transition: opacity 0.6s ease-in;
+}
+
+#main-content.visible {
+    opacity: 1;
 }
 
 body {
@@ -856,6 +969,318 @@ body {
     font-size: 10px;
     color: var(--text-muted);
     letter-spacing: 1px;
+}
+
+/* ===== 论坛 ===== */
+.forum-section {
+    margin-top: 40px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 32px;
+}
+
+.forum-main-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 20px;
+    letter-spacing: 3px;
+    color: var(--accent-red-glow);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.forum-main-title .section-icon {
+    font-size: 18px;
+}
+
+/* 用户 ID 设置 */
+.forum-user-setup {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.forum-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--accent-red-glow);
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.forum-input {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    padding: 8px 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.3s;
+    min-width: 200px;
+}
+
+.forum-input:focus {
+    border-color: var(--accent-red);
+    box-shadow: 0 0 8px rgba(139, 26, 26, 0.25);
+}
+
+/* 发布区域 */
+.forum-post-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.forum-textarea {
+    width: 100%;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 13px;
+    padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    outline: none;
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.7;
+    transition: border-color 0.3s;
+}
+
+.forum-textarea:focus {
+    border-color: var(--accent-red);
+    box-shadow: 0 0 8px rgba(139, 26, 26, 0.25);
+}
+
+.forum-textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.forum-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.forum-img-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+}
+
+.forum-img-btn:hover {
+    border-color: var(--accent-red);
+    color: var(--accent-red-glow);
+}
+
+.forum-preview {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.forum-preview img {
+    max-height: 80px;
+    border: 1px solid var(--border-color);
+}
+
+.forum-preview-item {
+    position: relative;
+    display: inline-block;
+}
+
+.forum-preview-remove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    background: var(--accent-red);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 18px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.forum-submit-btn {
+    margin-left: auto;
+    padding: 8px 24px;
+    background: var(--accent-red);
+    border: 1px solid var(--accent-red-glow);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    transition: all 0.3s;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.forum-submit-btn:hover {
+    background: var(--accent-red-glow);
+    box-shadow: 0 0 16px rgba(184, 48, 48, 0.5);
+}
+
+.forum-submit-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* 评论区 */
+.forum-comments {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.forum-empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 32px 0;
+    font-family: 'Noto Serif SC', serif;
+}
+
+/* 单条评论 */
+.forum-comment {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 16px;
+    transition: border-color 0.3s;
+}
+
+.forum-comment:hover {
+    border-color: rgba(139, 26, 26, 0.3);
+}
+
+.forum-comment-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.forum-comment-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-crimson), var(--accent-red));
+    border: 1px solid var(--accent-red-glow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    color: var(--text-primary);
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.forum-comment-user {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--accent-red-glow);
+    letter-spacing: 1px;
+}
+
+.forum-comment-time {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-left: auto;
+}
+
+.forum-comment-body {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 10px;
+    word-break: break-word;
+}
+
+.forum-comment-images {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.forum-comment-images img {
+    max-width: 240px;
+    max-height: 180px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.forum-comment-images img:hover {
+    border-color: var(--accent-red);
+}
+
+.forum-comment-footer {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.forum-comment-delete {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    transition: color 0.3s;
+    padding: 2px 6px;
+}
+
+.forum-comment-delete:hover {
+    color: var(--accent-red-glow);
+}
+
+/* 图片预览弹窗 */
+.forum-lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.forum-lightbox img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 0 40px rgba(139, 26, 26, 0.3);
 }
 
 /* Scrollbar */
