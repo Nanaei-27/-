@@ -641,6 +641,176 @@ body {
     font-family: 'Noto Serif SC', serif;
 }
 
+/* ===== 人物资料 ===== */
+.characters-section {
+    margin-top: 40px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 32px;
+}
+
+.characters-main-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 20px;
+    letter-spacing: 3px;
+    color: var(--accent-red-glow);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.characters-main-title .section-icon {
+    font-size: 18px;
+}
+
+/* Character Card */
+.character-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+}
+
+.character-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--accent-red), transparent 60%);
+}
+
+.character-card:hover {
+    border-color: rgba(139, 26, 26, 0.5);
+}
+
+/* Character Header */
+.char-header {
+    display: flex;
+    gap: 20px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, rgba(139, 26, 26, 0.06) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border-color);
+    align-items: center;
+}
+
+.char-avatar {
+    flex-shrink: 0;
+}
+
+.avatar-placeholder {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-crimson), var(--accent-red));
+    border: 2px solid var(--accent-red-glow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 24px;
+    color: var(--text-primary);
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(184, 48, 48, 0.5);
+    box-shadow: 0 0 20px rgba(139, 26, 26, 0.3);
+}
+
+.char-info h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 18px;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+.char-alias {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.char-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+}
+
+.char-meta {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+}
+
+/* Character Body */
+.char-body {
+    padding: 24px;
+}
+
+.char-section {
+    margin-bottom: 20px;
+}
+
+.char-section:last-child {
+    margin-bottom: 0;
+}
+
+.char-section h4 {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent-red-glow);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed rgba(42, 32, 32, 0.4);
+    font-weight: 400;
+    text-transform: uppercase;
+}
+
+.char-section p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.char-section p:last-child {
+    margin-bottom: 0;
+}
+
+.char-section p strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Character Quote */
+.char-quote {
+    margin: 16px 0 0 0;
+    padding: 12px 20px;
+    border-left: 3px solid var(--accent-red);
+    background: rgba(139, 26, 26, 0.06);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 13px;
+    color: var(--accent-red-glow);
+    font-style: italic;
+    line-height: 1.8;
+    letter-spacing: 1px;
+}
+
 /* Social Links */
 .social-links {
     max-width: 1400px;
@@ -707,6 +877,26 @@ body {
 }
 
 /* Responsive */
+@media (max-width: 600px) {
+    .full-width-table td:first-child {
+        width: 30%;
+        white-space: normal;
+    }
+
+    .char-body {
+        padding: 16px;
+    }
+
+    .char-header {
+        padding: 16px;
+    }
+
+    .avatar-placeholder {
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+    }
+}
 @media (max-width: 1024px) {
     .layout {
         flex-direction: column;
@@ -737,5 +927,16 @@ body {
         order: 3;
         width: 100%;
         justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .char-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .char-meta-row {
+        gap: 4px 10px;
     }
 }
